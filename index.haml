@@ -45,13 +45,13 @@
             %li.fragment
               Range#include? => Range#cover? to test Time range
             %li.fragment
-              File.open needs :binmode => true when for binary (like images)
+              File.open needs :binmode => true for binary files (like images)
             %li.fragment
               Gemfile version upgrades
             %li.fragment
               Range#step will not iterate over ranges of Time
             %li.fragment
-              Strings are not Enumerables, must call Array("String") to
+              Strings are not Enumerables, must call String#each_line to
               enumerate
             %li.fragment
               Enumerable#map with no block returns an Enumerator instead of an
@@ -88,7 +88,7 @@
             %li.fragment
               Performing a basic "SELECT * FROM" query on a table with 30k rows
               and fields of nearly every Ruby-representable data type, then
-              iterating over every row using an #each like method yielding a
+              iterating over every row using an #each-like method yielding a
               block*:
             %li.fragment
               %pre
@@ -131,7 +131,7 @@
               %code.language-mysql{:contenteditable => ""}
                 :preserve
                   SELECT * FROM articles WHERE user_id = ? and group_id = 1
-            %li.fragment Notice how only one parameter is abstracted
+            %li.fragment Notice how only one id is parameterized
             %li.fragment
               Eventually, you hit the MySQL default limit of 100,000 prepared statements
 
