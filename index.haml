@@ -3,7 +3,8 @@
   %head
     %meta{:charset => "utf-8"}/
     %title Presentation title
-    %meta{:content => "Greg Hurrell", :name => "author"}/
+    %meta{:content => "Causes Engineering", :name => "author"}/
+    %meta{:content => "Greg Hurrell and Adam Derewecki", :name => "authors"}/
     %link{:href => "http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic", :rel => "stylesheet", :type => "text/css"}/
     %link{:href => "reveal/css/reset.css", :rel => "stylesheet"}/
     %link{:href => "reveal/css/main.css", :rel => "stylesheet"}/
@@ -34,6 +35,192 @@
                     &lt;%= @cause.name %&gt;
             %li.fragment
               Another bullet point
+
+        %section
+          %h2 Some Nice Things
+
+        %section
+          %h2 ree-1.8.7 to 1.9.3-p194
+          %ul
+            %li.fragment
+              Range#include? => Range#cover? to test Time range
+            %li.fragment
+              File.open needs :binmode => true when for binary (like images)
+            %li.fragment
+              Gemfile version upgrades
+            %li.fragment
+              Range#step will not iterate over ranges of Time
+            %li.fragment
+              Strings are not Enumerables, must call Array("String") to
+              enumerate
+            %li.fragment
+              Enumerable#map with no block returns an Enumerator instead of an
+              Array
+            %li.fragment
+              Date.today no longer calls Time.now, which broke our Time.warp
+
+        %section
+          %h2 ree-1.8.7 to 1.9.3-p194
+          %ul
+            %li.fragment
+              Set operations require an enumerable instead of an instance of the
+              object
+            %li.fragment
+              e.g. Set.new([1,2]) - 1 vs. Set.new([1,2]) - [1]
+            %li.fragment
+              Date.parse no longer understands mm/dd/yyyy format (which Facebook
+              uses)
+            %li.fragment
+              Removed String#to_a
+            %li.fragment
+              when 'condition': 'returnvalue' became when 'condition' then
+              'returnvalue'
+            %li.fragment
+              {:k1, val, :k2, val2, ...} syntax removed
+
+        %section
+          %h2 mysql gem to mysql2 gem
+          %ul
+            %li.fragment
+              Benchmarking showed that the same query repeated 20x would have
+              1/20 of the queries running on the order of 100ms instead of
+              \.1-.4ms
+            %li.fragment
+              Performing a basic "SELECT * FROM" query on a table with 30k rows
+              and fields of nearly every Ruby-representable data type, then
+              iterating over every row using an #each like method yielding a
+              block*:
+            %li.fragment
+              %pre
+                user       system     total       real
+                Mysql2
+                0.750000   0.180000   0.930000 (  1.821655)
+                do_mysql
+                1.650000   0.200000   1.850000 (  2.811357)
+                Mysql
+                7.500000   0.210000   7.710000 (  8.065871)
+            %li.fragment (* https://github.com/brianmario/mysql2/)
+
+        %section
+          %h2 When 'stable' isn't
+          %ul
+            %li.fragment
+              New feature in Rails 3.1
+            %li.fragment
+              Allows `SELECT * FROM users WHERE id = 1' to be compiled as
+              `SELECT * FROM users WHERE id = ?' and bind `1' as the param
+            %li.fragment
+              Prepared statements execute faster
+            %li.fragment
+              \... except on MySQL, there is no significant speed gain
+            %li.fragment
+              We launched Rails 3.2.3 on the night of 2012/4/18
+
+        %section
+          %h2 The next morning...
+          %ul
+            %li.fragment
+              ActiveRecord::StatementInvalid: Mysql::Error: Can't create more
+              than max_prepared_stmt_count statements (current value: 16382):
+              SELECT `articles`.* FROM `articles` WHERE `articles`.`id` = ?
+              LIMIT 1
+            %li.fragment
+              Google fu => https://github.com/rails/rails/issues/5121
+            %li.fragment
+              Statement cache breaks for :has_many relations:
+              %code.language-mysql{:contenteditable => ""}
+                :preserve
+                  SELECT * FROM articles WHERE user_id = ? and group_id = 1
+            %li.fragment Notice how only one parameter is abstracted
+            %li.fragment
+              Eventually, you hit the MySQL default limit of 100,000 prepared statements
+
+        %section
+          %h2 Bleeding edge
+          %ul
+            %li.fragment
+              fd3984 allows the Statement Cache to be disabled
+            %li.fragment
+              We vendored Rails and put HEAD at fd3984
+            %li.fragment
+              %pre
+                commit fd398475afb64e362059a500e5cd54d08b9afdee
+                Author: Aaron Patterson <aaron.patterson@gmail.com>
+                Date:   Tue Feb 21 15:08:54 2012 -0800
+
+                prepared statements can be disabled
+            %li.fragment
+              That's IT -- five words
+            %li.fragment
+              This was also nearly 2 months after the commit, and it hadn't made
+              it to a stable release
+            %li.fragment
+              Takeaway: because Rails says something is stable doesn't mean that
+              it is.
+
+        %section
+          %h1 Pain Points
+
+        %section
+          %h2 Monthly sharded tables
+
+        %section
+          %h2 Master-Slave
+          %ul
+            %li
+              In Rails 2.1, `masochism' Gem directed writes to the master and
+              reads to the slave
+            %li
+              In Rails 2.3, we needed to switch to the masterslave Gem
+            %li
+              In Rails 3.0, we couldn't find a suitable plugin
+            %li
+              We ended up realizing that load on our master databases wasn't
+              high enough to justify getting reads-from-slave set up
+            %li Slaves exist today for failover purposes
+
+        %section
+          %h2 Over-siloed database topologies
+          %ul
+            %li Database topology plagued by premature optimization
+            %li Some large tables (cause_memberships ~900m rows)
+            %li `in_silo' broke with every major point release we upgraded to
+            %li Only silo databases once you hit performance problems
+
+        %section
+          %h1 Pain Points
+
+        %section
+          %h1 ARel Relations being cached instead of values
+          %ul
+            %li Shame on us for storing ActiveRecord objects in memcache!
+            %li Model.where(:id => x) is an ActiveRecord::Relation
+            %li If you cache this, you're caching the un-evaluated query
+            %li Every time it's retrieved from the cache, it evaluates
+            %li .. probably not what you wanted memcache to do
+
+        %section
+          %h2 Mailers
+          %ul
+            %li Mailer.deliver_themailer
+            %li Mailer.themailer().deliver
+            %li
+              There was no easy to way to convert this and we ended up verifying
+              each mailer by hand.
+
+        %section
+          %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
+          %ul
+            %li ARel and lazily evaluated queries
+            %li Ruby 1.9 performance benefits
+            %li Able to use more modern Gems
+
+        %section
+          %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
+          %ul
+            %li Be prepared to pull in commits ahead of Rails stable
+            %li
+              Latent bugs can cause site issues a day after flipping the switch
 
       /
         required for correct operation of reveal.js,
