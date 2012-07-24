@@ -27,7 +27,40 @@
           %h3 Greg Hurrell and Adam Derewecki
 
         %section
-          %h2 Some Nice Things
+          %h2 Causes stats
+          %ul
+            %li 44k+ commits, first commit December 2006
+            %li 1.2k+ source code files (down from 1.4k+)
+            %li 93k+ LOC
+            %li 3.4k+ example spec suite
+
+        %section
+          %h2 Upgrade Roadmap
+          %ul
+            %li Rails 2.1.0 (May 2008)
+            %li Rails 2.3.14
+            %li Rails 3.0.11
+            %li Rails 3.2.3
+            %li Rails 3.2.6, 3.2.7 etc
+
+        %section
+          %h2 Plan
+          %ul
+            %li.fragment Get spec suite passing
+            %li.fragment Manually QA in development environment
+            %li.fragment Test on staging
+            %li.fragment Gradual roll-out to production
+            %li.fragment Long-lived branches = pain, so be expedient
+
+        %section
+          %h1 Anticipated Pain Points
+          %ul
+            %li.fragment View auditing (due to new escaping behavior)
+            %li.fragment Gem compatibility
+            %li.fragment Asset pipeline
+            %li.fragment
+              Routes (new DSL, and problematic for a Facebook Canvas app with
+              "asymmetric" routes)
 
         %section
           %h2 ree-1.8.7 to 1.9.3-p194
@@ -161,21 +194,17 @@
               it is.
 
         %section
-          %h1 Pain Points
-
-        %section
-          %h2 Monthly sharded tables
-
-        %section
           %h2 Master-Slave
           %ul
             %li.fragment
               In Rails 2.1, `masochism' Gem directed writes to the master and
               reads to the slave
             %li.fragment
-              In Rails 2.3, we needed to switch to the masterslave Gem
+              In Rails 2.3, evaluated several alternatives (Octopus, DbCharmer);
+              switched to the master_slave Gem
             %li.fragment
-              In Rails 3.0, we couldn't find a suitable plugin
+              With each subsequent update, we had to repatch master_slave and
+              and our own "ar_extensions" code
             %li.fragment
               We ended up realizing that load on our master databases wasn't
               high enough to justify getting reads-from-slave set up
@@ -206,9 +235,31 @@
           %ul
             %li.fragment Mailer.deliver_themailer
             %li.fragment Mailer.themailer().deliver
+            %li.fragment Custom behavior implemented via common superclass
+            %li.fragment Reimplemented in terms of interceptors
             %li.fragment
               There was no easy to way to convert this and we ended up verifying
               each mailer by hand.
+
+        %section
+          %h2 The Static Asset Pipeline A.K.A. Silver Bullet
+          %ul
+            %li.fragment
+              Huge performance boost via concatenation and minification
+            %li.fragment Slow and painstaking process
+            %li.fragment
+              Minimal effort up front to get rolling: symlink, then
+              incrementally migrate and SASSify
+            %li.fragment
+              Huge changes required to deploy process
+
+        %section
+          %h2 Rollout
+          %ul
+            %li Special care needed with async jobs
+            %li Need separate queues, each running different Rails stack
+            %li Gradual roll out across application servers
+            %li Memcache may require invalidation
 
         %section
           %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
@@ -223,6 +274,15 @@
             %li.fragment Be prepared to pull in commits ahead of Rails stable
             %li.fragment
               Latent bugs can cause site issues a day after flipping the switch
+
+        %section
+          %h2 Takeaways
+          %ul
+            %li.fragment Stay as close to vanilla Rails as possible
+            %li.fragment Minimize your external dependencies (lean Gemfile)
+            %li.fragment
+              Simplicity is a win for the product and for the code base ("Dumb
+              is the new clever")
 
       /
         required for correct operation of reveal.js,
