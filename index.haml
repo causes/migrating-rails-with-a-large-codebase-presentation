@@ -53,7 +53,7 @@
             %li.fragment Long-lived branches = pain, so be expedient
 
         %section
-          %h1 Anticipated Pain Points
+          %h2 Anticipated Pain Points
           %ul
             %li.fragment View auditing (due to new escaping behavior)
             %li.fragment Gem compatibility
@@ -70,7 +70,7 @@
             %li.fragment
               File.open needs :binmode =&gt; true for binary files (like images)
             %li.fragment
-              Gemfile version upgrades
+              Gem version upgrades
             %li.fragment
               Range#step will not iterate over ranges of Time
             %li.fragment
@@ -119,15 +119,15 @@
               and fields of nearly every Ruby-representable data type, then
               iterating over every row using an #each-like method yielding a
               block*:
-            %li.fragment
               %pre
-                user       system     total       real
-                Mysql2
-                0.750000   0.180000   0.930000 (  1.821655)
-                do_mysql
-                1.650000   0.200000   1.850000 (  2.811357)
-                Mysql
-                7.500000   0.210000   7.710000 (  8.065871)
+                :preserve
+                  user       system     total       real
+                  Mysql2
+                  0.750000   0.180000   0.930000 (  1.821655)
+                  do_mysql
+                  1.650000   0.200000   1.850000 (  2.811357)
+                  Mysql
+                  7.500000   0.210000   7.710000 (  8.065871)
             %li.fragment (* https://github.com/brianmario/mysql2/)
 
         %section
@@ -177,21 +177,16 @@
               fd3984 allows the Statement Cache to be disabled
             %li.fragment
               We vendored Rails and put HEAD at fd3984
-            %li.fragment
               %pre
-                commit fd398475afb64e362059a500e5cd54d08b9afdee
-                Author: Aaron Patterson &lt;aaron.patterson@gmail.com&gt;
-                Date:   Tue Feb 21 15:08:54 2012 -0800
+                :preserve
+                  commit fd398475afb64e362059a500e5cd54d08b9afdee
+                  Author: Aaron Patterson &lt;aaron.patterson@gmail.com&gt;
+                  Date:   Tue Feb 21 15:08:54 2012 -0800
 
-                prepared statements can be disabled
-            %li.fragment
-              That's IT -- five words
+                  prepared statements can be disabled
             %li.fragment
               This was also nearly 2 months after the commit, and it hadn't made
               it to a stable release
-            %li.fragment
-              Takeaway: because Rails says something is stable doesn't mean that
-              it is.
 
         %section
           %h2 Master-Slave
@@ -206,14 +201,15 @@
               With each subsequent update, we had to repatch master_slave and
               and our own "ar_extensions" code
             %li.fragment
-              We ended up realizing that load on our master databases wasn't
-              high enough to justify getting reads-from-slave set up
+              Because of sitewide optimizations, we decided that SELECTs off of
+              the master were not taxing enough to worry about getting
+              read-from-slaves set up
             %li.fragment Slaves exist today for failover purposes
 
         %section
           %h2 Over-siloed database topologies
           %ul
-            %li.fragment Database topology plagued by premature optimization
+            %li.fragment Database topology was too "smart"
             %li.fragment Some large tables (cause_memberships ~900m rows)
             %li.fragment
               `in_silo' broke with every major point release we upgraded to
@@ -239,7 +235,7 @@
             %li.fragment Reimplemented in terms of interceptors
             %li.fragment
               There was no easy to way to convert this and we ended up verifying
-              each mailer by hand.
+              each mailer by hand
             %li.fragment Premailer adds an additional layer of complexity
 
         %section
@@ -263,27 +259,27 @@
             %li Memcache may require invalidation
 
         %section
-          %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
-          %ul
-            %li.fragment ARel and lazily evaluated queries
-            %li.fragment Ruby 1.9 performance benefits
-            %li.fragment Able to use more modern Gems
-
-        %section
-          %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
-          %ul
-            %li.fragment Be prepared to pull in commits ahead of Rails stable
-            %li.fragment
-              Latent bugs can cause site issues a day after flipping the switch
-
-        %section
           %h2 Takeaways
           %ul
             %li.fragment Stay as close to vanilla Rails as possible
+            %li.fragment Be prepared to pull in commits ahead of Rails stable
             %li.fragment Minimize your external dependencies (lean Gemfile)
             %li.fragment
               Simplicity is a win for the product and for the code base ("Dumb
               is the new clever")
+            %li.fragment Beware ARel and lazily evaluated queries
+
+        %section
+          %h2 Was it all worth it?
+          %ul
+            %li.fragment
+              Huge performance gains (Ruby 1.9, Asset Pipeline, mysql2 adapter)
+            %li.fragment
+              Able to use latest shiny toys (Haml, Sass, Compass, Jasmine, RSpec
+              2 etc)
+            %li.fragment Years of technical debt paid off, code deleted
+            %li.fragment Developer productivity and happiness higher than ever
+
 
       /
         required for correct operation of reveal.js,
