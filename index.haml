@@ -170,59 +170,59 @@
         %section
           %h2 Master-Slave
           %ul
-            %li
+            %li.fragment
               In Rails 2.1, `masochism' Gem directed writes to the master and
               reads to the slave
-            %li
+            %li.fragment
               In Rails 2.3, we needed to switch to the masterslave Gem
-            %li
+            %li.fragment
               In Rails 3.0, we couldn't find a suitable plugin
-            %li
+            %li.fragment
               We ended up realizing that load on our master databases wasn't
               high enough to justify getting reads-from-slave set up
-            %li Slaves exist today for failover purposes
+            %li.fragment Slaves exist today for failover purposes
 
         %section
           %h2 Over-siloed database topologies
           %ul
-            %li Database topology plagued by premature optimization
-            %li Some large tables (cause_memberships ~900m rows)
-            %li `in_silo' broke with every major point release we upgraded to
-            %li Only silo databases once you hit performance problems
+            %li.fragment Database topology plagued by premature optimization
+            %li.fragment Some large tables (cause_memberships ~900m rows)
+            %li.fragment
+              `in_silo' broke with every major point release we upgraded to
+            %li.fragment Only silo databases once you hit performance problems
 
         %section
-          %h1 Pain Points
-
-        %section
-          %h1 ARel Relations being cached instead of values
+          %h2 Caching ARel Relations
           %ul
-            %li Shame on us for storing ActiveRecord objects in memcache!
-            %li Model.where(:id => x) is an ActiveRecord::Relation
-            %li If you cache this, you're caching the un-evaluated query
-            %li Every time it's retrieved from the cache, it evaluates
-            %li .. probably not what you wanted memcache to do
+            %li.fragment
+              Shame on us for storing ActiveRecord objects in memcache!
+            %li.fragment Model.where(:id => x) is an ActiveRecord::Relation
+            %li.fragment
+              If you cache this, you're caching the un-evaluated query
+            %li.fragment Every time it's retrieved from the cache, it evaluates
+            %li.fragment .. probably not what you wanted memcache to do
 
         %section
           %h2 Mailers
           %ul
-            %li Mailer.deliver_themailer
-            %li Mailer.themailer().deliver
-            %li
+            %li.fragment Mailer.deliver_themailer
+            %li.fragment Mailer.themailer().deliver
+            %li.fragment
               There was no easy to way to convert this and we ended up verifying
               each mailer by hand.
 
         %section
           %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
           %ul
-            %li ARel and lazily evaluated queries
-            %li Ruby 1.9 performance benefits
-            %li Able to use more modern Gems
+            %li.fragment ARel and lazily evaluated queries
+            %li.fragment Ruby 1.9 performance benefits
+            %li.fragment Able to use more modern Gems
 
         %section
           %h2 Mo' Recent, Mo' Awesome and yet Mo' Problems
           %ul
-            %li Be prepared to pull in commits ahead of Rails stable
-            %li
+            %li.fragment Be prepared to pull in commits ahead of Rails stable
+            %li.fragment
               Latent bugs can cause site issues a day after flipping the switch
 
       /
