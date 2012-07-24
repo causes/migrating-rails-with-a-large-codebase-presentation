@@ -131,7 +131,7 @@
               %code.language-mysql{:contenteditable => ""}
                 :preserve
                   SELECT * FROM articles WHERE user_id = ? and group_id = 1
-            %li.fragment Notice how only one parameter is abstracted
+            %li.fragment Notice how only one id is parameterized
             %li.fragment
               Eventually, you hit the MySQL default limit of 100,000 prepared statements
 
