@@ -19,22 +19,13 @@
       .slides
 
         %section
-          %h1 Presentation title
+          %h1 Migrating Rails with a Large Codebase
 
-        %section
-          %h2 Slide title
-          %ul
-            %li.fragment
-              A bullet point
-            %li.fragment
-              Another bullet point
-              %pre.fragment
-                %code.language-ruby{:contenteditable => ""}
-                  :preserve
-                    # this is Ruby code
-                    &lt;%= @cause.name %&gt;
-            %li.fragment
-              Another bullet point
+          %h2 Causes Engineering
+          %br
+          %h3 Greg Hurrell and Adam Derewecki
+          %br
+          %h3 Presented at the July 25, 2012 SF RoR Meetup
 
         %section
           %h2 Some Nice Things
@@ -79,6 +70,12 @@
               {:k1, val, :k2, val2, ...} syntax removed
 
         %section
+          %h2 ree-1.8.7 to 1.9.3-p194
+          %img{ :src => 'images/ruby-187to193-perf.png' }
+          %ul
+            %li.fragment 1.9.3 went live at 12:35
+
+        %section
           %h2 mysql gem to mysql2 gem
           %ul
             %li.fragment
@@ -104,6 +101,8 @@
         %section
           %h2 When 'stable' isn't
           %ul
+            %li.fragment
+              Prepared Statment Cache for database queries
             %li.fragment
               New feature in Rails 3.1
             %li.fragment
