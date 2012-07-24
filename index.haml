@@ -132,7 +132,11 @@
                   SELECT * FROM articles WHERE user_id = ? and group_id = 1
             %li.fragment Notice how only one id is parameterized
             %li.fragment
-              Eventually, you hit the MySQL default limit of 100,000 prepared statements
+              Eventually, you hit the MySQL default limit of 16382 prepared statements
+            %li.fragment
+              We upped ours to ~100k as a stop gap while investigating
+            %li.fragment
+              And also cycled our app servers every hour to reset the count
 
         %section
           %h2 Bleeding edge
