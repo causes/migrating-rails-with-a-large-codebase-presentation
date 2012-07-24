@@ -29,6 +29,8 @@
         %section
           %h2 Causes stats
           %ul
+            %li Facebook Platform launch partner
+            %li Platform for collective action with 180m+ users
             %li 44k+ commits, first commit December 2006
             %li 1.2k+ source code files (down from 1.4k+)
             %li 93k+ LOC
@@ -167,11 +169,9 @@
               Eventually, you hit the MySQL default limit of 16382 prepared statements
             %li.fragment
               We upped ours to ~100k as a stop gap while investigating
-            %li.fragment
-              And also cycled our app servers every hour to reset the count
 
         %section
-          %h2 Bleeding edge
+          %h2 Moving to bleeding edge
           %ul
             %li.fragment
               fd3984 allows the Statement Cache to be disabled
@@ -239,7 +239,8 @@
             %li.fragment Premailer adds an additional layer of complexity
 
         %section
-          %h2 The Static Asset Pipeline A.K.A. Silver Bullet
+          %h2 The Static Asset Pipeline
+          %h3 A.K.A. Silver Bullet
           %ul
             %li.fragment
               Huge performance boost via concatenation and minification
