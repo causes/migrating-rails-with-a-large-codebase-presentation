@@ -3,28 +3,27 @@
   %head
     %meta{:charset => "utf-8"}/
     %title Migrating Rails with a Large Codebase
-    %meta{:content => "Causes Engineering", :name => "author"}/
     %meta{:content => "Greg Hurrell and Adam Derewecki", :name => "authors"}/
     %link{:href => "http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic", :rel => "stylesheet", :type => "text/css"}/
     %link{:href => "reveal/css/reset.css", :rel => "stylesheet"}/
     %link{:href => "reveal/css/main.css", :rel => "stylesheet"}/
     %link{:href => "highlight/src/styles/solarized_dark.css", :rel => "stylesheet"}/
+    %link{:href => "causes.css", :rel => "stylesheet"}/
     / overrides for default reveal styles
     :css
       #reveal pre {
         font-size: 24px;
       }
-  %body
+  %body#causes
     .reveal
       .slides
 
         %section
           %h1 Migrating Rails with a Large Codebase
           %br
-          %br
-          %br
-          %h2 Causes Engineering
-          %h3 Greg Hurrell and Adam Derewecki
+          %h5 presented by
+          %h4 Greg Hurrell and Adam Derewecki
+          %img.logo{:src => 'assets/causes_logo.png'}
 
         %section
           %h2 Causes stats
