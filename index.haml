@@ -19,7 +19,7 @@
       .slides
 
         %section
-          %h1 Migrating Rails with a Large Codebase
+          %h1 Migrating Rails with<br>a Large Codebase
           %br
           %h5 presented by
           %h4 Greg Hurrell and Adam Derewecki
@@ -54,7 +54,7 @@
             %li.fragment Long-lived branches = pain, so be expedient
 
         %section
-          %h2 Anticipated Pain Points
+          %h2 Anticipated<br>Pain Points
           %ul
             %li.fragment View auditing (due to new escaping behavior)
             %li.fragment Gem compatibility
@@ -64,7 +64,7 @@
               "asymmetric" routes)
 
         %section
-          %h2 ree-1.8.7 to 1.9.3-p194
+          %h2 ree-1.8.7 to 1.9.3
           %ul
             %li.fragment
               Range#include? =&gt; Range#cover? to test Time range
@@ -84,7 +84,7 @@
               Date.today no longer calls Time.now, which broke our Time.warp
 
         %section
-          %h2 ree-1.8.7 to 1.9.3-p194
+          %h2 ree-1.8.7 to 1.9.3
           %ul
             %li.fragment
               Set operations require an enumerable instead of an instance of the
@@ -103,7 +103,7 @@
               {:k1, val, :k2, val2, ...} syntax removed
 
         %section
-          %h2 ree-1.8.7 to 1.9.3-p194
+          %h2 ree-1.8.7 to 1.9.3
           %img{ :src => 'images/ruby-187to193-perf.png' }
           %ul
             %li.fragment 1.9.3 went live at 12:35
@@ -166,8 +166,6 @@
             %li.fragment Notice how only one id is parameterized
             %li.fragment
               Eventually, you hit the MySQL default limit of 16382 prepared statements
-            %li.fragment
-              We upped ours to ~100k as a stop gap while investigating
 
         %section
           %h2 Moving to bleeding edge
@@ -238,7 +236,7 @@
             %li.fragment Premailer adds an additional layer of complexity
 
         %section
-          %h2 The Static Asset Pipeline
+          %h2 The Static<br>Asset Pipeline
           %h3 A.K.A. Silver Bullet
           %ul
             %li.fragment
@@ -270,7 +268,7 @@
             %li.fragment Beware ARel and lazily evaluated queries
 
         %section
-          %h2 Was it all worth it?
+          %h2 Was it all<br>worth it?
           %ul
             %li.fragment
               Huge performance gains (Ruby 1.9, Asset Pipeline, mysql2 adapter)
