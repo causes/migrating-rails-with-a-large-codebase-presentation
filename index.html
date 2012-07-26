@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='utf-8' />
+    <title>Presentation title</title>
+    <meta content='Causes Engineering' name='author' />
+    <meta content='Greg Hurrell and Adam Derewecki' name='authors' />
+    <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css' />
+    <link href='reveal/css/reset.css' rel='stylesheet' />
+    <link href='reveal/css/main.css' rel='stylesheet' />
+    <link href='highlight/src/styles/solarized_dark.css' rel='stylesheet' />
+    <!-- overrides for default reveal styles -->
+    <style type='text/css'>
+      /*<![CDATA[*/
+        #reveal pre {
+          font-size: 24px;
+        }
+      /*]]>*/
+    </style>
+  </head>
+  <body>
+    <div class='reveal'>
+      <div class='slides'>
+        <section>
+          <h1>Migrating Rails with a Large Codebase</h1>
+          <br />
+          <br />
+          <br />
+          <h2>Causes Engineering</h2>
+          <h3>Greg Hurrell and Adam Derewecki</h3>
+        </section>
+        <section>
+          <h2>Causes stats</h2>
+          <ul>
+            <li>Facebook Platform launch partner</li>
+            <li>Platform for collective action with 180m+ users</li>
+            <li>44k+ commits, first commit December 2006</li>
+            <li>1.2k+ source code files (down from 1.4k+)</li>
+            <li>93k+ LOC</li>
+            <li>3.4k+ example spec suite</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Upgrade Roadmap</h2>
+          <ul>
+            <li>Rails 2.1.0 (May 2008)</li>
+            <li>Rails 2.3.14</li>
+            <li>Rails 3.0.11</li>
+            <li>Rails 3.2.3</li>
+            <li>Rails 3.2.6, 3.2.7 etc</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Plan</h2>
+          <ul>
+            <li class='fragment'>Get spec suite passing</li>
+            <li class='fragment'>Manually QA in development environment</li>
+            <li class='fragment'>Test on staging</li>
+            <li class='fragment'>Gradual roll-out to production</li>
+            <li class='fragment'>Long-lived branches = pain, so be expedient</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Anticipated Pain Points</h2>
+          <ul>
+            <li class='fragment'>View auditing (due to new escaping behavior)</li>
+            <li class='fragment'>Gem compatibility</li>
+            <li class='fragment'>Asset pipeline</li>
+            <li class='fragment'>
+              Routes (new DSL, and problematic for a Facebook Canvas app with
+              "asymmetric" routes)
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <ul>
+            <li class='fragment'>
+              Range#include? =&gt; Range#cover? to test Time range
+            </li>
+            <li class='fragment'>
+              File.open needs :binmode =&gt; true for binary files (like images)
+            </li>
+            <li class='fragment'>
+              Gem version upgrades
+            </li>
+            <li class='fragment'>
+              Range#step will not iterate over ranges of Time
+            </li>
+            <li class='fragment'>
+              Strings are not Enumerables, must call String#each_line to
+              enumerate
+            </li>
+            <li class='fragment'>
+              Enumerable#map with no block returns an Enumerator instead of an
+              Array
+            </li>
+            <li class='fragment'>
+              Date.today no longer calls Time.now, which broke our Time.warp
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <ul>
+            <li class='fragment'>
+              Set operations require an enumerable instead of an instance of the
+              object
+            </li>
+            <li class='fragment'>
+              e.g. Set.new([1,2]) - 1 vs. Set.new([1,2]) - [1]
+            </li>
+            <li class='fragment'>
+              Date.parse no longer understands mm/dd/yyyy format (which Facebook
+              uses)
+            </li>
+            <li class='fragment'>
+              Removed String#to_a
+            </li>
+            <li class='fragment'>
+              when 'condition': 'returnvalue' became when 'condition' then
+              'returnvalue'
+            </li>
+            <li class='fragment'>
+              {:k1, val, :k2, val2, ...} syntax removed
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <img src='images/ruby-187to193-perf.png' />
+          <ul>
+            <li class='fragment'>1.9.3 went live at 12:35</li>
+          </ul>
+        </section>
+        <section>
+          <h2>mysql gem to mysql2 gem</h2>
+          <ul>
+            <li class='fragment'>
+              Benchmarking showed that the same query repeated 20x would have
+              1/20 of the queries running on the order of 100ms instead of
+              .1-.4ms
+            </li>
+            <li class='fragment'>
+              Performing a basic "SELECT * FROM" query on a table with 30k rows
+              and fields of nearly every Ruby-representable data type, then
+              iterating over every row using an #each-like method yielding a
+              block*:
+              <pre>user       system     total       real&#x000A;Mysql2&#x000A;0.750000   0.180000   0.930000 (  1.821655)&#x000A;do_mysql&#x000A;1.650000   0.200000   1.850000 (  2.811357)&#x000A;Mysql&#x000A;7.500000   0.210000   7.710000 (  8.065871)</pre>
+            </li>
+            <li class='fragment'>(* https://github.com/brianmario/mysql2/)</li>
+          </ul>
+        </section>
+        <section>
+          <h2>When 'stable' isn't</h2>
+          <ul>
+            <li class='fragment'>
+              Prepared Statement Cache for database queries
+            </li>
+            <li class='fragment'>
+              New feature in Rails 3.1
+            </li>
+            <li class='fragment'>
+              Allows `SELECT * FROM users WHERE id = 1' to be compiled as
+              `SELECT * FROM users WHERE id = ?' and bind `1' as the param
+            </li>
+            <li class='fragment'>
+              Prepared statements execute faster
+            </li>
+            <li class='fragment'>
+              ... except on MySQL, there is no significant speed gain
+            </li>
+            <li class='fragment'>
+              We launched Rails 3.2.3 on the night of 2012/4/18
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>The next morning...</h2>
+          <ul>
+            <li class='fragment'>
+              ActiveRecord::StatementInvalid: Mysql::Error: Can't create more
+              than max_prepared_stmt_count statements (current value: 16382):
+              SELECT `articles`.* FROM `articles` WHERE `articles`.`id` = ?
+              LIMIT 1
+            </li>
+            <li class='fragment'>
+              Google fu =&gt; https://github.com/rails/rails/issues/5121
+            </li>
+            <li class='fragment'>
+              Statement cache breaks for :has_many relations:
+              <code class='language-mysql' contenteditable=''>SELECT * FROM articles WHERE user_id = ? and group_id = 1</code>
+            </li>
+            <li class='fragment'>Notice how only one id is parameterized</li>
+            <li class='fragment'>
+              Eventually, you hit the MySQL default limit of 16382 prepared statements
+            </li>
+            <li class='fragment'>
+              We upped ours to ~100k as a stop gap while investigating
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>Moving to bleeding edge</h2>
+          <ul>
+            <li class='fragment'>
+              fd3984 allows the Statement Cache to be disabled
+            </li>
+            <li class='fragment'>
+              We vendored Rails and put HEAD at fd3984
+              <pre>commit fd398475afb64e362059a500e5cd54d08b9afdee&#x000A;Author: Aaron Patterson &lt;aaron.patterson@gmail.com&gt;&#x000A;Date:   Tue Feb 21 15:08:54 2012 -0800&#x000A;&#x000A;prepared statements can be disabled</pre>
+            </li>
+            <li class='fragment'>
+              This was also nearly 2 months after the commit, and it hadn't made
+              it to a stable release
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>Master-Slave</h2>
+          <ul>
+            <li class='fragment'>
+              In Rails 2.1, `masochism' Gem directed writes to the master and
+              reads to the slave
+            </li>
+            <li class='fragment'>
+              In Rails 2.3, evaluated several alternatives (Octopus, DbCharmer);
+              switched to the master_slave Gem
+            </li>
+            <li class='fragment'>
+              With each subsequent update, we had to repatch master_slave and
+              and our own "ar_extensions" code
+            </li>
+            <li class='fragment'>
+              Because of sitewide optimizations, we decided that SELECTs off of
+              the master were not taxing enough to worry about getting
+              read-from-slaves set up
+            </li>
+            <li class='fragment'>Slaves exist today for failover purposes</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Over-siloed database topologies</h2>
+          <ul>
+            <li class='fragment'>Database topology was too "smart"</li>
+            <li class='fragment'>Some large tables (cause_memberships ~900m rows)</li>
+            <li class='fragment'>
+              `in_silo' broke with every major point release we upgraded to
+            </li>
+            <li class='fragment'>Only silo databases once you hit performance problems</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Caching ARel Relations</h2>
+          <ul>
+            <li class='fragment'>
+              Shame on us for storing ActiveRecord objects in memcache!
+            </li>
+            <li class='fragment'>Model.where(:id =&gt; x) is an ActiveRecord::Relation</li>
+            <li class='fragment'>
+              If you cache this, you're caching the un-evaluated query
+            </li>
+            <li class='fragment'>Every time it's retrieved from the cache, it evaluates</li>
+            <li class='fragment'>.. probably not what you wanted memcache to do</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Mailers</h2>
+          <ul>
+            <li class='fragment'>Mailer.deliver_themailer</li>
+            <li class='fragment'>Mailer.themailer().deliver</li>
+            <li class='fragment'>Custom behavior implemented via common superclass</li>
+            <li class='fragment'>Reimplemented in terms of interceptors</li>
+            <li class='fragment'>
+              There was no easy to way to convert this and we ended up verifying
+              each mailer by hand
+            </li>
+            <li class='fragment'>Premailer adds an additional layer of complexity</li>
+          </ul>
+        </section>
+        <section>
+          <h2>The Static Asset Pipeline</h2>
+          <h3>A.K.A. Silver Bullet</h3>
+          <ul>
+            <li class='fragment'>
+              Huge performance boost via concatenation and minification
+            </li>
+            <li class='fragment'>Slow and painstaking process</li>
+            <li class='fragment'>
+              Minimal effort up front to get rolling: symlink, then
+              incrementally migrate and SASSify
+            </li>
+            <li class='fragment'>
+              Huge changes required to deploy process
+            </li>
+          </ul>
+        </section>
+        <section>
+          <h2>Rollout</h2>
+          <ul>
+            <li>Special care needed with async jobs</li>
+            <li>Need separate queues, each running different Rails stack</li>
+            <li>Gradual roll out across application servers</li>
+            <li>Memcache may require invalidation</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Takeaways</h2>
+          <ul>
+            <li class='fragment'>Stay as close to vanilla Rails as possible</li>
+            <li class='fragment'>Be prepared to pull in commits ahead of Rails stable</li>
+            <li class='fragment'>Minimize your external dependencies (lean Gemfile)</li>
+            <li class='fragment'>
+              Simplicity is a win for the product and for the code base ("Dumb
+              is the new clever")
+            </li>
+            <li class='fragment'>Beware ARel and lazily evaluated queries</li>
+          </ul>
+        </section>
+        <section>
+          <h2>Was it all worth it?</h2>
+          <ul>
+            <li class='fragment'>
+              Huge performance gains (Ruby 1.9, Asset Pipeline, mysql2 adapter)
+            </li>
+            <li class='fragment'>
+              Able to use latest shiny toys (Haml, Sass, Compass, Jasmine, RSpec
+              2 etc)
+            </li>
+            <li class='fragment'>Years of technical debt paid off, code deleted</li>
+            <li class='fragment'>Developer productivity and happiness higher than ever</li>
+          </ul>
+        </section>
+      </div>
+      <!--
+        required for correct operation of reveal.js,
+        even if we don't want controls
+      -->
+      <aside class='controls'>
+        <a class='left' href='#'>&#x25c4;</a>
+        <a class='right' href='#'>&#x25ba;</a>
+        <a class='up' href='#'>&#x25b2;</a>
+        <a class='down' href='#'>&#x25bc;</a>
+      </aside>
+    </div>
+    <script src='reveal/js/reveal.min.js'></script>
+    <script src='highlight/build/highlight.pack.js'></script>
+    <script type='text/javascript'>
+      //<![CDATA[
+        Reveal.initialize({
+          controls: false,
+          progress: false,
+          history: true,
+          mouseWheel: false,
+          rollingLinks: false,
+        });
+        hljs.initHighlightingOnLoad();
+      //]]>
+    </script>
+  </body>
+</html>
