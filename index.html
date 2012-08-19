@@ -2,13 +2,13 @@
 <html lang='en'>
   <head>
     <meta charset='utf-8' />
-    <title>Presentation title</title>
-    <meta content='Causes Engineering' name='author' />
+    <title>Migrating Rails with a Large Codebase</title>
     <meta content='Greg Hurrell and Adam Derewecki' name='authors' />
     <link href='http://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic' rel='stylesheet' type='text/css' />
     <link href='reveal/css/reset.css' rel='stylesheet' />
     <link href='reveal/css/main.css' rel='stylesheet' />
     <link href='highlight/src/styles/solarized_dark.css' rel='stylesheet' />
+    <link href='causes.css' rel='stylesheet' />
     <!-- overrides for default reveal styles -->
     <style type='text/css'>
       /*<![CDATA[*/
@@ -18,16 +18,15 @@
       /*]]>*/
     </style>
   </head>
-  <body>
+  <body id='causes'>
     <div class='reveal'>
       <div class='slides'>
         <section>
-          <h1>Migrating Rails with a Large Codebase</h1>
+          <h1>Migrating Rails with<br>a Large Codebase</h1>
           <br />
-          <br />
-          <br />
-          <h2>Causes Engineering</h2>
-          <h3>Greg Hurrell and Adam Derewecki</h3>
+          <h5>presented by</h5>
+          <h4>Greg Hurrell and Adam Derewecki</h4>
+          <img class='logo' src='assets/causes_logo.png' />
         </section>
         <section>
           <h2>Causes stats</h2>
@@ -61,7 +60,7 @@
           </ul>
         </section>
         <section>
-          <h2>Anticipated Pain Points</h2>
+          <h2>Anticipated<br>Pain Points</h2>
           <ul>
             <li class='fragment'>View auditing (due to new escaping behavior)</li>
             <li class='fragment'>Gem compatibility</li>
@@ -73,7 +72,7 @@
           </ul>
         </section>
         <section>
-          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <h2>ree-1.8.7 to 1.9.3</h2>
           <ul>
             <li class='fragment'>
               Range#include? =&gt; Range#cover? to test Time range
@@ -101,7 +100,7 @@
           </ul>
         </section>
         <section>
-          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <h2>ree-1.8.7 to 1.9.3</h2>
           <ul>
             <li class='fragment'>
               Set operations require an enumerable instead of an instance of the
@@ -127,7 +126,7 @@
           </ul>
         </section>
         <section>
-          <h2>ree-1.8.7 to 1.9.3-p194</h2>
+          <h2>ree-1.8.7 to 1.9.3</h2>
           <img src='images/ruby-187to193-perf.png' />
           <ul>
             <li class='fragment'>1.9.3 went live at 12:35</li>
@@ -194,9 +193,6 @@
             <li class='fragment'>Notice how only one id is parameterized</li>
             <li class='fragment'>
               Eventually, you hit the MySQL default limit of 16382 prepared statements
-            </li>
-            <li class='fragment'>
-              We upped ours to ~100k as a stop gap while investigating
             </li>
           </ul>
         </section>
@@ -279,7 +275,7 @@
           </ul>
         </section>
         <section>
-          <h2>The Static Asset Pipeline</h2>
+          <h2>The Static<br>Asset Pipeline</h2>
           <h3>A.K.A. Silver Bullet</h3>
           <ul>
             <li class='fragment'>
@@ -318,7 +314,7 @@
           </ul>
         </section>
         <section>
-          <h2>Was it all worth it?</h2>
+          <h2>Was it all<br>worth it?</h2>
           <ul>
             <li class='fragment'>
               Huge performance gains (Ruby 1.9, Asset Pipeline, mysql2 adapter)
